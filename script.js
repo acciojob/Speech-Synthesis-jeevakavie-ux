@@ -1,9 +1,9 @@
 const synth = window.speechSynthesis;
 
 const text = document.querySelector("textarea");
-const voiceSelect = document.querySelector("select");
-const rate = document.querySelector("#rate");
-const pitch = document.querySelector("#pitch");
+const voiceSelect = document.querySelector("#voices");
+const rate = document.querySelector('[name="rate"]');
+const pitch = document.querySelector('[name="pitch"]');
 
 const speakButton = document.querySelector("#speak");
 const stopButton = document.querySelector("#stop");
@@ -14,13 +14,6 @@ function populateVoices() {
     voices = synth.getVoices();
 
     voiceSelect.innerHTML = "";
-
-    if (voices.length === 0) {
-        const option = document.createElement("option");
-        option.textContent = "No voices available";
-        voiceSelect.appendChild(option);
-        return;
-    }
 
     voices.forEach(function(voice) {
         const option = document.createElement("option");
@@ -72,5 +65,3 @@ voiceSelect.addEventListener("change", function() {
         speak();
     }
 });
-
-
