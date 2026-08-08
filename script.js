@@ -1,4 +1,4 @@
-cconst synth = window.speechSynthesis;
+const synth = window.speechSynthesis;
 
 const text = document.querySelector("textarea");
 const voiceSelect = document.querySelector("select");
@@ -62,6 +62,7 @@ function stop() {
 synth.addEventListener("voiceschanged", populateVoices);
 
 populateVoices();
+
 speakButton.addEventListener("click", speak);
 
 stopButton.addEventListener("click", stop);
