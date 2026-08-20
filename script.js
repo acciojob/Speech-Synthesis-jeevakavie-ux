@@ -1,67 +1,38 @@
 const synth = window.speechSynthesis;
-
-const text = document.querySelector("textarea");
-const voiceSelect = document.querySelector("#voices");
-const rate = document.querySelector('[name="rate"]');
-const pitch = document.querySelector('[name="pitch"]');
-
-const speakButton = document.querySelector("#speak");
-const stopButton = document.querySelector("#stop");
-
 let voices = [];
 
-function populateVoices() {
+function loadVoices() {
     voices = synth.getVoices();
+}
 
-    voiceSelect.innerHTML = "";
+loadVoices();
 
-    voices.forEach(function(voice) {
-        const option = document.createElement("option");
-
-        option.textContent = voice.name;
-        option.value = voice.name;
-
-        voiceSelect.appendChild(option);
-    });
+if (speechSynthesis.onvoiceschanged !== undefined) {
+    speechSynthesis.onvoiceschanged = loadVoices;
 }
 
 function speak() {
-    if (text.value.trim() === "") {
+    const text = document.querySelector("textarea").value;
+
+    if (!text.trim()) {
         return;
     }
 
-    synth.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
 
-    const utterance = new SpeechSynthesisUtterance(text.value);
+    
+    const selectedVoice = voices.find(
+        voice => voice.name === voiceSelect.value
+    );
 
-    const selectedVoice = voices.find(function(voice) {
-        return voice.name === voiceSelect.value;
-    });
-
+    
     if (selectedVoice) {
         utterance.voice = selectedVoice;
     }
 
-    utterance.rate = parseFloat(rate.value);
-    utterance.pitch = parseFloat(pitch.value);
+    utterance.rate = rate.value;
+    utterance.pitch = pitch.value;
 
+    synth.cancel();
     synth.speak(utterance);
 }
-
-function stop() {
-    synth.cancel();
-}
-
-synth.addEventListener("voiceschanged", populateVoices);
-
-populateVoices();
-
-speakButton.addEventListener("click", speak);
-
-stopButton.addEventListener("click", stop);
-
-voiceSelect.addEventListener("change", function() {
-    if (synth.speaking) {
-        speak();
-    }
-});
