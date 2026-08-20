@@ -1,7 +1,8 @@
 const synth = window.speechSynthesis;
 
-const msg = document.querySelector("textarea");
+const textarea = document.querySelector("textarea");
 const voiceSelect = document.querySelector("select");
+
 const rate = document.querySelector("#rate");
 const pitch = document.querySelector("#pitch");
 
@@ -10,8 +11,14 @@ const stopButton = document.querySelector("#stop");
 
 let voices = [];
 
+
+// Load voices
 function loadVoices() {
     voices = synth.getVoices();
+
+    if (voices.length === 0) {
+        return;
+    }
 
     voiceSelect.innerHTML = "";
 
@@ -26,11 +33,14 @@ function loadVoices() {
 }
 
 loadVoices();
+
 synth.addEventListener("voiceschanged", loadVoices);
 
 
+// Speak
 function speak() {
-    const text = msg.value.trim();
+
+    const text = textarea.value.trim();
 
     if (!text) {
         return;
@@ -38,6 +48,7 @@ function speak() {
 
     const utterance = new SpeechSynthesisUtterance(text);
 
+    // Select voice
     const selectedVoice = voices.find(
         (voice) => voice.name === voiceSelect.value
     );
@@ -46,16 +57,37 @@ function speak() {
         utterance.voice = selectedVoice;
     }
 
-    utterance.rate = parseFloat(rate.value);
-    utterance.pitch = parseFloat(pitch.value);
+    // Apply rate
+    utterance.rate = Number(rate.value);
 
+    // Apply pitch
+    utterance.pitch = Number(pitch.value);
+
+    // Stop previous speech
     synth.cancel();
+
+    // Start speech
     synth.speak(utterance);
 }
 
 
+// Speak button
 speakButton.addEventListener("click", speak);
 
+
+// Stop button
 stopButton.addEventListener("click", () => {
     synth.cancel();
 });
+
+
+// Voice change
+voiceSelect.addEventListener("change", speak);
+
+
+// Rate change
+rate.addEventListener("change", speak);
+
+
+// Pitch change
+pitch.addEventListener("change", speak);
